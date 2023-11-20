@@ -27,7 +27,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     "admin",
-    "{area}/{controller=Home}/{action=Index}");
+    "{area}/{controller=Book}/{action=Index}");
 
 
 app.MapControllerRoute(
