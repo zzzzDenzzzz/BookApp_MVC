@@ -1,0 +1,103 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@model IndexViewModel
+
+
+<vc:pagination
+    current-page="@Model.CurrentPages"
+    total-pages="@Model.TotalPages"
+    limit="@Model.LimitPage"
+    tag-id="@Model.SelectedAuthorId"
+    category-id="@Model.SelectedGenreId"
+    action="Index"
+    controller="Book">
+</vc:pagination>
+
+
+<div class="row">
+
+    <div class="col-2">
+        <a asp-controller="Book" asp-action="Index" class="btn btn-outline-info">Reset</a>
+        <hr/>
+        <div class="row">
+            <h3>Genres</h3>
+            <hr/>
+            <div class="list-group">
+                @foreach (var item in @Model.Genres)
+                {
+                    <a asp-action="Index" asp-controller="Book" asp-route-categoryId="@item.GenreId" asp-route-tagId="@Model.SelectedAuthorId"
+                       class="list-group-item list-group-item-action @(Model.SelectedGenreId == item.GenreId ? "active" : ' ') ">
+                        @item.Name
+                    </a>
+                }
+
+            </div>
+        </div>
+
+        <div class="row">
+            <h3>Authors</h3>
+            <hr/>
+            <div class="list-group">
+                @foreach (var item in @Model.Authors)
+                {
+                    <a asp-action="Index" asp-controller="Book" asp-route-tagId="@item.AuthorId" asp-route-categoryId="@Model.SelectedGenreId"
+                       class="list-group-item list-group-item-action @(Model.SelectedAuthorId == item.AuthorId ? "active" : ' ') ">
+                        @item.FullName
+                    </a>
+                }
+
+            </div>
+        </div>
+    </div>
+    <div class="col-10">
+        @if (TempData.ContainsKey("status"))
+        {
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>Messages!</strong>@TempData["status"].
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @if (Model.Books.Any())
+        {
+            <div class="row">
+                @foreach (var item in Model.Books)
+                {
+                    <div class="card col-4" style="width: 18rem;">
+                        <img src="@item.ImageUrl" class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title">@item.Title</h5>
+                            <hr>
+
+                            @if (item.BookAuthors.Any())
+                            {
+                                @foreach (var author in item.BookAuthors)
+                                {
+                                    <span class="badge bg-primary rounded-pill">@author.Author.FullName</span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger rounded-pill">None</span>
+                            }
+                            <hr>
+                            <span>@item.Genre.Name</span>
+                            <p class="card-text">@Html.Raw(@item.Description)</p>
+                            <span>@item.Date</span>
+                            <br>
+                            <a asp-action="Details" asp-controller="Book" asp-route-id="@item.BookId" class="btn btn-primary">Details</a>
+                            <a asp-action="Edit" asp-controller="Book" asp-route-id="@item.BookId" class="btn btn-primary">Edit</a>
+                            <a asp-action="Delete" asp-controller="Book" asp-route-id="@item.BookId" class="btn btn-primary">Delete</a>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else if (!@Model.Books.Any())
+        {
+            <h3>Not found</h3>
+        }
+    </div>
+</div>
